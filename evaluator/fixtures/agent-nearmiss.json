@@ -1,0 +1,1 @@
+{"contract_version": "1.0", "diagnosis": "root cause is spark.config.spark.driver.memory too low", "actions": ["inspect sales_daily", "rerun sales_daily"], "evidence_refs": ["spark.config.spark.driver.memory:probe_diagnosis_exact"], "abstained": false, "abstain_reason": ""}

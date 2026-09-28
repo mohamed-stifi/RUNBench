@@ -1,0 +1,9 @@
+{
+  "t_fault": 1690000000,
+  "t_diagnosed": 1690000300,
+  "t_mitigated": 1690000900,
+  "tokens": 12500,
+  "turns": 7,
+  "cost_suh": 2.5,
+  "query_runtime_s": 180
+}

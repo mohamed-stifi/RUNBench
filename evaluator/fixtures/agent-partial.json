@@ -1,0 +1,1 @@
+{"contract_version": "1.0", "diagnosis": "task airflow.task.sales_daily.spark_submit_agg.failed after its Spark app died; root cause unclear", "actions": ["inspect sales_daily"], "evidence_refs": ["spark.config.spark.executor.memory:probe_diagnosis_exact"], "abstained": false, "abstain_reason": ""}

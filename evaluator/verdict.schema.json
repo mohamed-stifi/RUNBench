@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://runbench/schemas/verdict.schema.json",
+  "title": "Evaluator output: verdict JSON (v1.1)",
+  "description": "Machine-readable run verdict. pass_at_1 stays binary; localization_score/timers/cost are additional signals (cost tracked, not ranked in v1). Ref specs/07-evaluator.md.",
+  "type": "object",
+  "required": ["scenario_id", "evaluator_version", "diagnosis_pass", "mitigation_pass", "evidence_ok", "safety_violation", "abstained", "malformed", "pass_at_1", "localization_score", "mttd_s", "mttr_s", "ttp_s", "cost", "notes"],
+  "properties": {
+    "scenario_id": { "type": "string" },
+    "evaluator_version": { "type": "string" },
+    "diagnosis_pass": { "type": "boolean" },
+    "mitigation_pass": { "type": "boolean" },
+    "evidence_ok": { "type": "boolean" },
+    "safety_violation": { "type": "boolean" },
+    "abstained": { "type": "boolean" },
+    "malformed": { "type": "boolean" },
+    "pass_at_1": { "type": "boolean" },
+    "localization_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "mttd_s": { "type": ["integer", "null"], "minimum": 0 },
+    "mttr_s": { "type": ["integer", "null"], "minimum": 0 },
+    "ttp_s": { "type": ["integer", "null"], "minimum": 0 },
+    "cost": {
+      "type": "object",
+      "required": ["tokens", "turns", "cost_suh", "query_runtime_s"],
+      "properties": {
+        "tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "turns": { "type": ["integer", "null"], "minimum": 0 },
+        "cost_suh": { "type": ["number", "null"], "minimum": 0 },
+        "query_runtime_s": { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "dataset_tag": "dataset@run.dag-failure.001-0.1.0",
+  "board_version": "1.0",
+  "date": "2026-09-28T02:01:48Z",
+  "entries": [
+    {
+      "agent": "null",
+      "agent_version": "null@d7bb3d6",
+      "model": null,
+      "scenario_id": "run.dag-failure.001",
+      "scenario_tag": "0.1.0",
+      "dataset_tag": "dataset@run.dag-failure.001-0.1.0",
+      "task_class": "job-dag-failure-diagnosis",
+      "complexity": "medium",
+      "autonomy_layer": 4,
+      "mode": "replay",
+      "split": "multiple",
+      "trials": 3,
+      "pass_rate": 0.0,
+      "resolved_pct": 0.0,
+      "partial_mean": 0,
+      "mttd_s_mean": 1.0,
+      "mttr_s_mean": null,
+      "mttr_unresolved": true,
+      "ci95": 0.0,
+      "sigma": 0.0,
+      "cost": {
+        "tokens_mean": null,
+        "wallclock_s_mean": 1.0,
+        "suh_mean": null
+      },
+      "abstain_rate": 1.0,
+      "evidence_score": 0.0,
+      "date": "2026-09-28T02:01:15Z",
+      "run_ids": [
+        "run-1790560871-32306"
+      ],
+      "board_version": "1.0"
+    },
+    {
+      "agent": "oracle",
+      "agent_version": "oracle@d7bb3d6",
+      "model": null,
+      "scenario_id": "run.dag-failure.001",
+      "scenario_tag": "0.1.0",
+      "dataset_tag": "dataset@run.dag-failure.001-0.1.0",
+      "task_class": "job-dag-failure-diagnosis",
+      "complexity": "medium",
+      "autonomy_layer": 4,
+      "mode": "replay",
+      "split": "single",
+      "trials": 1,
+      "pass_rate": 0.0,
+      "resolved_pct": 0.0,
+      "partial_mean": 1.0,
+      "mttd_s_mean": 1.0,
+      "mttr_s_mean": null,
+      "mttr_unresolved": true,
+      "ci95": null,
+      "sigma": null,
+      "cost": {
+        "tokens_mean": null,
+        "wallclock_s_mean": 1.0,
+        "suh_mean": null
+      },
+      "abstain_rate": 0.0,
+      "evidence_score": 1.0,
+      "date": "2026-09-28T02:01:17Z",
+      "run_ids": [
+        "run-1790560875-32695"
+      ],
+      "board_version": "1.0"
+    }
+  ]
+}

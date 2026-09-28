@@ -13,5 +13,6 @@ remain the source of truth; this folder holds how-to material only.
 - [`snapshot.md`](snapshot.md) — snapshot & deterministic replay (Issue #13)
 - [`baseline.md`](baseline.md) — baseline agent + obs tools (Issue #14)
 - [`runner.md`](runner.md) — runner MVP + budgets + journal (Issue #10)
+- [`leaderboard.md`](leaderboard.md) — board schema + filters + releases (Issue #11)
 
 Contributor guides (add-scenario walkthrough, dashboard usage) land in Issue #16.

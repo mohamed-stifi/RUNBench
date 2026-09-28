@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://runbench/schemas/board-entry.schema.json",
+  "title": "Leaderboard entry: aggregated agent×scenario record (v1)",
+  "description": "One immutable board entry per (agent_version, scenario_tag, mode, split). Aggregated from runner runlog.jsonl records. MTTR uses the unresolved convention: mttr_s null + mttr_unresolved true, rendered as infinity. Ref specs/08-leaderboard.md.",
+  "type": "object",
+  "required": ["agent", "agent_version", "model", "scenario_id", "scenario_tag", "dataset_tag", "task_class", "complexity", "autonomy_layer", "mode", "split", "trials", "pass_rate", "resolved_pct", "partial_mean", "mttd_s_mean", "mttr_s_mean", "mttr_unresolved", "ci95", "sigma", "cost", "abstain_rate", "evidence_score", "date", "run_ids", "board_version"],
+  "properties": {
+    "agent": { "type": "string" },
+    "agent_version": { "type": "string" },
+    "model": { "type": ["string", "null"] },
+    "scenario_id": { "type": "string" },
+    "scenario_tag": { "type": "string" },
+    "dataset_tag": { "type": "string" },
+    "task_class": { "type": "string" },
+    "complexity": { "type": "string" },
+    "autonomy_layer": { "type": ["integer", "null"] },
+    "mode": { "type": "string", "enum": ["replay", "live"] },
+    "split": { "type": "string", "enum": ["single", "multiple"] },
+    "trials": { "type": "integer", "minimum": 1 },
+    "pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "resolved_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "partial_mean": { "type": "number", "minimum": 0, "maximum": 1 },
+    "mttd_s_mean": { "type": ["number", "null"], "minimum": 0 },
+    "mttr_s_mean": { "type": ["number", "null"], "minimum": 0 },
+    "mttr_unresolved": { "type": "boolean" },
+    "ci95": { "type": ["number", "null"], "minimum": 0 },
+    "sigma": { "type": ["number", "null"], "minimum": 0 },
+    "cost": {
+      "type": "object",
+      "required": ["tokens_mean", "wallclock_s_mean", "suh_mean"],
+      "properties": {
+        "tokens_mean": { "type": ["number", "null"], "minimum": 0 },
+        "wallclock_s_mean": { "type": ["number", "null"], "minimum": 0 },
+        "suh_mean": { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+    "abstain_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+    "evidence_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "date": { "type": "string" },
+    "run_ids": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "board_version": { "type": "string" }
+  }
+}

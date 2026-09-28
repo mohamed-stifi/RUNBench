@@ -1,0 +1,18 @@
+# Harbor-style task descriptor (Issue #01 scaffolding fixture).
+# Full field set is validated by the schema in Issue #02.
+
+[task]
+id = "hello-task"
+version = "0.1.0"
+difficulty = "trivial"
+category = "scaffolding"
+tags = ["fixture", "scaffolding"]
+
+[timeouts]
+build_sec = 300
+run_sec = 120
+
+# Pinned dataset release this task belongs to (Terminal-Bench dataset@version pattern).
+[dataset]
+name = "runbench-fixtures"
+version = "0.1.0"

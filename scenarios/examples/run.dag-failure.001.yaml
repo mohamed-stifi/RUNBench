@@ -1,0 +1,23 @@
+# Stub fixture for `scenario validate` (Issue #01).
+# Shape follows specs/04-scenario-spec.md; full schema validation lands in Issue #02.
+id: run.dag-failure.001
+class: job-dag-failure-diagnosis
+domain: RUN
+complexity: medium
+autonomy: { start: L1, target: L4 }
+platforms: [airflow, spark, yarn]
+metadata:
+  description: "Validate-stub fixture: failed DAG run diagnosis"
+  tags: [fixture, scaffolding]
+  version: 0.1.0
+environment: { image: cdp-slim:0.1.0, services: [airflow, spark], seed: 42 }
+trigger: { event: airflow_task_failed, alert_ref: fixture-alert-001 }
+task: { goal: "Diagnose failed DAG run, propose safe rerun", budget: { time_min: 60, steps: 50 } }
+ground_truth:
+  root_causes: [fixture-cause]
+  propagation_chain: [fixture-cause]
+  expected_fix_variants: [[rerun]]
+  probes:
+    diagnosis_pass: { type: exact, value: fixture-cause }
+    mitigation_pass: { type: state-check, query: "fixture query" }
+safety: { readonly: false, allowed_verbs: [rerun, clear], gated_verbs: [delete], abstain_allowed: true }

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# RUNBench scenario CLI stub (Issue #01).
+# Currently checks existence + prints id/version. Full schema validation
+# against schemas/ lands in Issue #02.
+set -euo pipefail
+
+usage() {
+  echo "usage: scenario validate <scenario-file>" >&2
+  exit 2
+}
+
+field() {
+  # $1 = key, $2 = file. Matches top-level or nested `key: value`, first hit.
+  grep -E "^[[:space:]]*$1:" "$2" | head -n1 | cut -d: -f2- | tr -d ' "\"'\' | head -c 200
+}
+
+cmd="${1:-}"; file="${2:-}"
+[[ "$cmd" == "validate" && -n "$file" ]] || usage
+
+if [[ ! -f "$file" ]]; then
+  echo "scenario validate: not found: $file" >&2
+  exit 1
+fi
+
+id="$(field id "$file")"
+version="$(field version "$file")"
+
+if [[ -z "$id" || -z "$version" ]]; then
+  echo "scenario validate: $file missing id or version" >&2
+  exit 1
+fi
+
+echo "$id $version"

@@ -10,5 +10,6 @@ remain the source of truth; this folder holds how-to material only.
 - [`safety.md`](safety.md) — guardrails, sandbox, redaction (Issue #09)
 - [`harness.md`](harness.md) — agent file contract + null-agent (Issue #06)
 - [`evaluator.md`](evaluator.md) — pass@1 scoring + golden fixtures (Issue #07)
+- [`snapshot.md`](snapshot.md) — snapshot & deterministic replay (Issue #13)
 
 Contributor guides (add-scenario walkthrough, dashboard usage) land in Issue #16.

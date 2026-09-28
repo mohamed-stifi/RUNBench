@@ -1,3 +1,5 @@
 .venv/
 __pycache__/
 *.pyc
+replay/
+env/snapshots/

@@ -1,0 +1,71 @@
+# CDP-slim v1 mock env (Issue #04). One pinned stub image, 7 services.
+# Contract per service: GET /health -> "ok <name> seed=<n>", GET /state/<key> -> value.
+# Real CDP images replace these stubs later; the endpoint shape is stable.
+# Host ports default to 18081-18087 (8081/8082 often belong to a real Spark
+# cluster); override via AIRFLOW_PORT/SPARK_PORT/... env vars.
+name: cdp-slim
+
+services:
+  airflow:
+    build: .
+    image: runbench/cdp-slim-stub:0.1.0
+    environment:
+      SERVICE_NAME: airflow
+      PORT: "8080"
+      SEED: ${SEED:-7}
+    ports:
+      - "${AIRFLOW_PORT:-18081}:8080"
+  spark:
+    build: .
+    image: runbench/cdp-slim-stub:0.1.0
+    environment:
+      SERVICE_NAME: spark
+      PORT: "8080"
+      SEED: ${SEED:-7}
+    ports:
+      - "${SPARK_PORT:-18082}:8080"
+  hive-metastore:
+    build: .
+    image: runbench/cdp-slim-stub:0.1.0
+    environment:
+      SERVICE_NAME: hive-metastore
+      PORT: "8080"
+      SEED: ${SEED:-7}
+    ports:
+      - "${HIVE_PORT:-18083}:8080"
+  impala:
+    build: .
+    image: runbench/cdp-slim-stub:0.1.0
+    environment:
+      SERVICE_NAME: impala
+      PORT: "8080"
+      SEED: ${SEED:-7}
+    ports:
+      - "${IMPALA_PORT:-18084}:8080"
+  ozone:
+    build: .
+    image: runbench/cdp-slim-stub:0.1.0
+    environment:
+      SERVICE_NAME: ozone
+      PORT: "8080"
+      SEED: ${SEED:-7}
+    ports:
+      - "${OZONE_PORT:-18085}:8080"
+  ranger:
+    build: .
+    image: runbench/cdp-slim-stub:0.1.0
+    environment:
+      SERVICE_NAME: ranger
+      PORT: "8080"
+      SEED: ${SEED:-7}
+    ports:
+      - "${RANGER_PORT:-18086}:8080"
+  yarn:
+    build: .
+    image: runbench/cdp-slim-stub:0.1.0
+    environment:
+      SERVICE_NAME: yarn
+      PORT: "8080"
+      SEED: ${SEED:-7}
+    ports:
+      - "${YARN_PORT:-18087}:8080"

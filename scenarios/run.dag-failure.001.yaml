@@ -58,4 +58,4 @@ oracle:
   fault_inject: scenarios/run.dag-failure.001/fault-inject.sh
   solution: scenarios/run.dag-failure.001/solution.sh
   test: scenarios/run.dag-failure.001/test.sh
-  status: stub
+  status: ready

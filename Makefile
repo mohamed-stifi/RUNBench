@@ -41,8 +41,10 @@ ifndef SCENARIO
 endif
 ifeq ($(REPLAY_AGENT),null)
 	$(eval AGENT_SH := harness/null-agent/run.sh)
+else ifeq ($(REPLAY_AGENT),baseline)
+	$(eval AGENT_SH := agents/baseline/run.sh)
 else
-	$(error unsupported REPLAY_AGENT=$(REPLAY_AGENT) — v1 supports null only)
+	$(error unsupported REPLAY_AGENT=$(REPLAY_AGENT) — v1 supports null|baseline)
 endif
 	rm -rf replay && mkdir -p replay
 	if [ ! -f env/snapshots/$(SCENARIO)/snap-seed$(SEED)/manifest.json ]; then \

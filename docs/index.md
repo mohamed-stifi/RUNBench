@@ -11,5 +11,6 @@ remain the source of truth; this folder holds how-to material only.
 - [`harness.md`](harness.md) — agent file contract + null-agent (Issue #06)
 - [`evaluator.md`](evaluator.md) — pass@1 scoring + golden fixtures (Issue #07)
 - [`snapshot.md`](snapshot.md) — snapshot & deterministic replay (Issue #13)
+- [`baseline.md`](baseline.md) — baseline agent + obs tools (Issue #14)
 
 Contributor guides (add-scenario walkthrough, dashboard usage) land in Issue #16.

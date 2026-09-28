@@ -54,6 +54,7 @@ safety:
   allowed_verbs: [inspect, clear, rerun]
   gated_verbs: [delete, restart]
   abstain_allowed: true
+  blast_radius: [sales_daily]
 oracle:
   fault_inject: scenarios/run.dag-failure.001/fault-inject.sh
   solution: scenarios/run.dag-failure.001/solution.sh

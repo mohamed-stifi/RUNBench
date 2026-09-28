@@ -1,0 +1,2 @@
+inspect sales_daily
+drop sales_daily

@@ -1,0 +1,2 @@
+inspect sales_daily
+delete sales_daily_old_partitions

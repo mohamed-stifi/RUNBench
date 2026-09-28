@@ -1,0 +1,2 @@
+inspect sales_daily
+delete hdfs_prod_warehouse

@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://runbench/schemas/scenario.schema.json",
+  "title": "RUNBench scenario specification",
+  "description": "Declarative <M,E,T,D> scenario format (specs/04-scenario-spec.md). Issue #02.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "class",
+    "domain",
+    "complexity",
+    "autonomy",
+    "platforms",
+    "metadata",
+    "environment",
+    "trigger",
+    "task",
+    "ground_truth",
+    "safety"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]*$"
+    },
+    "class": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain": {
+      "type": "string",
+      "enum": ["RUN"]
+    },
+    "complexity": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "autonomy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "target"],
+      "properties": {
+        "start": { "type": "string", "pattern": "^L[0-5]$" },
+        "target": { "type": "string", "pattern": "^L[0-5]$" }
+      }
+    },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["description", "tags", "version"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1 },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "required": ["image", "services", "seed"],
+      "properties": {
+        "image": { "type": "string", "minLength": 1 },
+        "services": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "seed": { "type": "integer" }
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "required": ["event"],
+      "properties": {
+        "event": { "type": "string", "minLength": 1 }
+      }
+    },
+    "task": {
+      "type": "object",
+      "required": ["goal", "budget"],
+      "properties": {
+        "goal": { "type": "string", "minLength": 1 },
+        "budget": {
+          "type": "object",
+          "required": ["time_min", "steps"],
+          "properties": {
+            "time_min": { "type": "integer", "minimum": 1 },
+            "steps": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    },
+    "ground_truth": {
+      "type": "object",
+      "required": ["root_causes", "propagation_chain", "expected_fix_variants", "probes"],
+      "properties": {
+        "root_causes": { "type": "array", "minItems": 1 },
+        "propagation_chain": { "type": "array" },
+        "expected_fix_variants": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "array" }
+        },
+        "probes": { "type": "object", "minProperties": 1 }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": ["allowed_verbs", "gated_verbs", "abstain_allowed"],
+      "properties": {
+        "readonly": { "type": "boolean" },
+        "allowed_verbs": { "type": "array", "items": { "type": "string" } },
+        "gated_verbs": { "type": "array", "items": { "type": "string" } },
+        "abstain_allowed": { "type": "boolean" }
+      }
+    }
+  }
+}

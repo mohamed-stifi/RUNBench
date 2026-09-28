@@ -1,5 +1,5 @@
-# Stub fixture for `scenario validate` (Issue #01).
-# Shape follows specs/04-scenario-spec.md; full schema validation lands in Issue #02.
+# Valid sample for `scenario validate` (Issues #01 + #02).
+# Shape follows specs/04-scenario-spec.md and schemas/scenario.schema.json.
 id: run.dag-failure.001
 class: job-dag-failure-diagnosis
 domain: RUN

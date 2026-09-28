@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://runbench/schemas/scenario.schema.json",
   "title": "RUNBench scenario specification",
-  "description": "Declarative <M,E,T,D> scenario format (specs/04-scenario-spec.md). Issue #02.",
+  "description": "Declarative <M,E,T,D> scenario format (specs/04-scenario-spec.md). Issues #02 + #03.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -116,6 +116,16 @@
         "allowed_verbs": { "type": "array", "items": { "type": "string" } },
         "gated_verbs": { "type": "array", "items": { "type": "string" } },
         "abstain_allowed": { "type": "boolean" }
+      }
+    },
+    "oracle": {
+      "type": "object",
+      "description": "Fault-injection + solution + test scripts (Terminal-Bench pattern). Stubbed paths allowed until Issues #04/#05 implement them.",
+      "properties": {
+        "fault_inject": { "type": "string" },
+        "solution": { "type": "string" },
+        "test": { "type": "string" },
+        "status": { "type": "string", "enum": ["stub", "ready"] }
       }
     }
   }

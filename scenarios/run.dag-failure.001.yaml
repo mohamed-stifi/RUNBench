@@ -1,0 +1,61 @@
+# First real RUNBench scenario: Job and DAG failure diagnosis (Issue #03).
+# Spec-only: oracle scripts are stub references until Issues #04/#05 implement them.
+id: run.dag-failure.001
+class: job-dag-failure-diagnosis
+domain: RUN
+complexity: medium
+autonomy: { start: L1, target: L4 }
+platforms: [airflow, spark, yarn]
+metadata:
+  description: "Airflow DAG sales_daily task spark_submit_agg failed after its Spark app died on executor OOM; diagnose the root cause with linked evidence and propose a safe rerun"
+  tags: [dag-failure, airflow, spark, oom]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [airflow, spark, yarn]
+  seed: 7
+trigger:
+  event: airflow_task_failed
+  alert_ref: pd-INC-2026-0842
+  dag_id: sales_daily
+  task_id: spark_submit_agg
+  logical_date: "2026-09-27T00:00:00+00:00"
+task:
+  goal: "Identify the root cause of the failed DAG run with linked evidence and propose a safe rerun plan; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - spark.config.spark.executor.memory
+    - spark.app.sales_daily_agg_20260927.executor.oom
+  propagation_chain:
+    - spark.config.spark.executor.memory
+    - spark.app.sales_daily_agg_20260927.executor.oom
+    - airflow.task.sales_daily.spark_submit_agg.failed
+    - airflow.dagrun.sales_daily.failed
+  expected_fix_variants:
+    - - "raise spark.executor.memory to 8g in the Spark submit conf"
+      - "clear task spark_submit_agg"
+      - "rerun the DAG run"
+    - - "enable adaptive query execution with skew-split handling"
+      - "clear task spark_submit_agg"
+      - "rerun the DAG run"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.root_cause
+      value: spark.config.spark.executor.memory
+      command: "jq -e '.root_cause == \"spark.config.spark.executor.memory\"' result.json"
+    mitigation_pass:
+      type: state-check
+      query: "airflow dags state sales_daily 2026-09-27"
+      command: "airflow dags state sales_daily 2026-09-27T00:00:00+00:00 | grep -q success"
+safety:
+  readonly: false
+  allowed_verbs: [inspect, clear, rerun]
+  gated_verbs: [delete, restart]
+  abstain_allowed: true
+oracle:
+  fault_inject: scenarios/run.dag-failure.001/fault-inject.sh
+  solution: scenarios/run.dag-failure.001/solution.sh
+  test: scenarios/run.dag-failure.001/test.sh
+  status: stub

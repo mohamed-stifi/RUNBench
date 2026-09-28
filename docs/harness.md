@@ -28,3 +28,18 @@ tool implementations land later).
 `sh harness/test-harness.sh` (repo root): null-agent on the sample input emits
 valid `result.json` exit 0; the invalid fixture fails with per-field errors.
 Must stay 8/8.
+
+## Contract versioning + conformance (Issue #17)
+
+- `contract_version: "1.0"` in `agent-harness.yaml` and both schemas (const).
+  `harness/check-contract.sh` fails fast with a migration note on mismatch —
+  no partial run. Bump all three together; never accept silently.
+- `harness/gate-action.sh SCENARIO_YAML VERB TARGET LAYER` — orchestrator
+  pre-execution gate (one action checked before it runs; `safety.sh` scores
+  full traces after).
+- `harness/conformance.sh SCENARIO_YAML AGENT_RESULT_JSON` — evaluator-side
+  stage: copies output read-only (`:ro` mount in containers), validates,
+  rejects `..`/absolute paths, cross-checks `evidence_refs` (`entity:probe`
+  with entity in ground-truth `root_causes`). Forged pass claims score fail;
+  abstain passes. Green required before board listing.
+- `sh harness/test-harness.sh` 8/8 + `sh harness/test-conformance.sh` 13/13.

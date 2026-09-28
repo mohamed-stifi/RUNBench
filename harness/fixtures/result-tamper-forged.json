@@ -1,0 +1,8 @@
+{
+  "contract_version": "1.0",
+  "diagnosis": "executor OOM fixed by raising memory",
+  "actions": ["rerun sales_daily"],
+  "evidence_refs": ["spark.app.BOGUS_APP:probe_diagnosis_exact"],
+  "abstained": false,
+  "abstain_reason": ""
+}

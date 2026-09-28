@@ -1,4 +1,5 @@
 {
+  "contract_version": "1.0",
   "scenario_id": "run.dag-failure.001",
   "goal_template": "Identify the root cause of the failed DAG run with linked evidence and propose a safe rerun plan; abstain if evidence is inconclusive",
   "vars": {

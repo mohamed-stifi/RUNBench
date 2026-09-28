@@ -4,9 +4,10 @@
   "title": "Harness input: scenario_data.json",
   "description": "What the runner hands the agent. Ref specs/06-agent-harness.md.",
   "type": "object",
-  "required": ["scenario_id", "goal_template", "vars", "autonomy_max", "budget"],
+  "required": ["contract_version", "scenario_id", "goal_template", "vars", "autonomy_max", "budget"],
   "additionalProperties": false,
   "properties": {
+    "contract_version": { "const": "1.0" },
     "scenario_id": { "type": "string" },
     "goal_template": { "type": "string", "minLength": 1 },
     "vars": { "type": "object" },

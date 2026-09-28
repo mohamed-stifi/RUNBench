@@ -1,0 +1,7 @@
+# v1.1 harness fixture: declares a NEWER contract than the runner supports.
+contract_version: "1.1"
+input_path: /in/scenario_data.json
+output_path: /out/result.json
+run:
+  command: sh harness/null-agent/run.sh
+  timeout_min: 60

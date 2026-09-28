@@ -17,6 +17,7 @@ goal="$(grep -E '"goal_template"' "$IN" | head -1 | sed -E 's/.*"[g]oal_template
 mkdir -p "$(dirname "$OUT")"
 cat > "$OUT" <<EOF
 {
+  "contract_version": "1.0",
   "diagnosis": "",
   "actions": [],
   "evidence_refs": [],

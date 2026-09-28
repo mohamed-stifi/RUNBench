@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://runbench/schemas/result.schema.json",
+  "title": "Harness output: result.json",
+  "description": "What the agent hands back. Every claimed root cause needs evidence links (evaluator penalizes otherwise); abstain carries a reason. Ref specs/06-agent-harness.md.",
+  "type": "object",
+  "required": ["diagnosis", "actions", "evidence_refs", "abstained", "abstain_reason"],
+  "additionalProperties": false,
+  "properties": {
+    "diagnosis": { "type": "string" },
+    "actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "abstained": { "type": "boolean" },
+    "abstain_reason": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "abstained": { "const": false } } },
+      "then": { "properties": { "diagnosis": { "minLength": 1 } } }
+    },
+    {
+      "if": { "properties": { "abstained": { "const": true } } },
+      "then": { "properties": { "abstain_reason": { "minLength": 1 } } }
+    }
+  ]
+}

@@ -8,5 +8,6 @@ remain the source of truth; this folder holds how-to material only.
 - [`../specs/04-scenario-spec.md`](../specs/04-scenario-spec.md) — scenario format (`<M,E,T,D>`)
 - [`../README.md`](../README.md) — repo layout and quickstart
 - [`safety.md`](safety.md) — guardrails, sandbox, redaction (Issue #09)
+- [`harness.md`](harness.md) — agent file contract + null-agent (Issue #06)
 
 Contributor guides (add-scenario walkthrough, dashboard usage) land in Issue #16.

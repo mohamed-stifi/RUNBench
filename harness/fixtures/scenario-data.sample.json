@@ -1,0 +1,11 @@
+{
+  "scenario_id": "run.dag-failure.001",
+  "goal_template": "Identify the root cause of the failed DAG run with linked evidence and propose a safe rerun plan; abstain if evidence is inconclusive",
+  "vars": {
+    "dag_id": "sales_daily",
+    "task_id": "spark_submit_agg",
+    "logical_date": "2026-09-27T00:00:00+00:00"
+  },
+  "autonomy_max": 2,
+  "budget": { "time_min": 60, "steps": 50 }
+}

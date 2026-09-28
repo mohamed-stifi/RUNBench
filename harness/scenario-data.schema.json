@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://runbench/schemas/scenario-data.schema.json",
+  "title": "Harness input: scenario_data.json",
+  "description": "What the runner hands the agent. Ref specs/06-agent-harness.md.",
+  "type": "object",
+  "required": ["scenario_id", "goal_template", "vars", "autonomy_max", "budget"],
+  "additionalProperties": false,
+  "properties": {
+    "scenario_id": { "type": "string" },
+    "goal_template": { "type": "string", "minLength": 1 },
+    "vars": { "type": "object" },
+    "autonomy_max": { "type": "integer", "minimum": 0, "maximum": 5 },
+    "budget": {
+      "type": "object",
+      "required": ["time_min", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "time_min": { "type": "number", "exclusiveMinimum": 0 },
+        "steps": { "type": "integer", "exclusiveMinimum": 0 }
+      }
+    }
+  }
+}

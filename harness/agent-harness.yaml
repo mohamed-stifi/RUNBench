@@ -1,0 +1,16 @@
+# agent-harness.yaml — file contract between core and agent harness (Issue #06).
+# The harness is implemented separately; any agent plugs in by honoring these
+# paths and the run command. Container paths (/in, /out) are mounted by the
+# runner; local runs pass host paths positionally to the agent entrypoint.
+# Ref: specs/06-agent-harness.md (ITBench agent-harness.yaml pattern).
+input_path: /in/scenario_data.json
+output_path: /out/result.json
+run:
+  command: sh harness/null-agent/run.sh
+  timeout_min: 60
+budget:
+  time_min: 60
+  steps: 50
+schemas:
+  input: harness/scenario-data.schema.json
+  output: harness/result.schema.json

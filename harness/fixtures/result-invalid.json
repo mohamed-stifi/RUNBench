@@ -1,0 +1,4 @@
+{
+  "diagnosis": "executor OOM",
+  "actions": ["rerun sales_daily"]
+}

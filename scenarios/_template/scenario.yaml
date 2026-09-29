@@ -1,0 +1,45 @@
+# STARTER scenario.yaml — copy to scenarios/<scenario-id>.yaml and fill every <FILL>.
+# Contract: schema-validated (schemas/scenario.schema.json); seed pinned;
+# safety verbs match the class row in specs/09-task-classes.md.
+id: run.<FILL-class-slug>.NNN
+class: <FILL-one-of-the-10-RUN-classes>
+domain: RUN
+complexity: <FILL-easy|medium|hard>
+autonomy: { start: <FILL-L1|L2>, target: <FILL-L3|L4|L5> }
+platforms: [<FILL-airflow, spark, yarn, hive, ozone, nifi...>]
+metadata:
+  description: "<FILL-one-sentence failure story>"
+  tags: [<FILL-keywords>]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [<FILL-subset-of-platforms>]
+  seed: <FILL-integer-default-7>
+trigger:
+  event: <FILL-triggering-event>
+  alert_ref: <FILL-alert-id>
+  dag_id: <FILL>
+  task_id: <FILL>
+  logical_date: "<FILL-ISO8601>"
+task:
+  goal: "<FILL-diagnose/fix goal; abstain if evidence is inconclusive>"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - <FILL-config-entity>
+    - <FILL-fault-entity>
+  propagation_chain:
+    - <FILL-config → fault → task failed → dagrun failed (4 links)>
+  fix_variants:
+    - "<FILL-variant-1>"
+    - "<FILL-variant-2>"
+safety:
+  allowed_verbs: [<FILL-per-class-row>]
+  gated_verbs: [<FILL>]
+  abstain_allowed: true
+blast_radius: [<FILL-scope>]
+oracle:
+  fault_inject: scenarios/<FILL-id>/fault-inject.sh
+  solution: scenarios/<FILL-id>/solution.sh
+  test: scenarios/<FILL-id>/test.sh
+  status: stub

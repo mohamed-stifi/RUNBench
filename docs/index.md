@@ -17,3 +17,9 @@ remain the source of truth; this folder holds how-to material only.
 - [`ci.md`](ci.md) — CI gates: validate, oracle-5x, secrets, contamination, append-only (Issue #15)
 
 Contributor guides (add-scenario walkthrough, dashboard usage) land in Issue #16.
+
+- [`architecture.md`](architecture.md) — 5 components + flow (Issue #16)
+- [`autonomy.md`](autonomy.md) — L0-L5 layers + gates (Issue #16)
+- [`scenario-format.md`](scenario-format.md) — `<M,E,T,D>` field reference (Issue #16)
+- [`coverage.md`](coverage.md) — class × scenario matrix (Issue #16)
+- [`add-scenario.md`](add-scenario.md) — contributor walkthrough + reviewer checklist (Issue #16)

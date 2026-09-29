@@ -1,6 +1,6 @@
 #!/bin/sh
 # run.sh — Runner MVP: select -> provision -> inject -> run -> evaluate -> record
-# (Issue #10). Single-scenario MVP (run.dag-failure.001), replay or live.
+# (Issue #10). Multi-scenario MVP (run.dag-failure.001|.002), replay or live.
 #   sh runner/run.sh SCENARIO AGENT [SEED] [TRIALS] [--live]
 #   AGENT: null | baseline | oracle. SEED default 7, TRIALS default 1.
 #   Replay (default): offline snapshot per trial, zero live containers.

@@ -7,18 +7,17 @@ N ?= 3
 .PHONY: start-scenario stop-scenario snapshot replay
 
 # Brings up env, waits healthy, injects fault, shows failed DAG state.
-# Usage: make start-scenario SCENARIO=run.dag-failure.001|run.dag-failure.002 [SEED=7]
+# Usage: make start-scenario SCENARIO=<id> [SEED=7] (any scenario with fault-inject.sh)
 start-scenario:
 ifndef SCENARIO
 	$(error SCENARIO required, e.g. make start-scenario SCENARIO=run.dag-failure.001)
 endif
-ifeq ($(SCENARIO),$(filter $(SCENARIO),run.dag-failure.001 run.dag-failure.002))
+ifeq ($(wildcard scenarios/$(SCENARIO)/fault-inject.sh),)
+	$(error no fault-inject.sh for SCENARIO=$(SCENARIO))
+endif
 	SEED=$(SEED) $(COMPOSE) up --build -d
 	sh env/cdp-slim/waiters/wait-healthy.sh 120
 	SEED=$(SEED) sh scenarios/$(SCENARIO)/fault-inject.sh $(SEED)
-else
-	$(error unsupported SCENARIO=$(SCENARIO) — v1 supports run.dag-failure.001|run.dag-failure.002)
-endif
 
 # Tears everything down (containers + volumes + built image state).
 stop-scenario:

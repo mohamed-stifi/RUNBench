@@ -1,4 +1,4 @@
-# Evaluator v1.1 (Issues #07 + #08)
+# Evaluator v1.2 (Issues #07 + #08 + #12)
 
 Objective scoring for `run.dag-failure.001` only. Source of truth:
 `../specs/07-evaluator.md`.
@@ -20,8 +20,11 @@ never crashes (exit stays 0; exit 2 is evaluator usage error only).
 ## Rules
 
 - Diagnosis: exact root-cause entity named in `diagnosis` text.
-- Mitigation: re-derived from final `dag.state` file only — agent-written
-  `test-output.log` is never read (tamper-proofing).
+- Mitigation: re-derived from final state file only — agent-written
+  `test-output.log` is never read (tamper-proofing). v1.2: the state file
+  and expected value come from `probes.mitigation_pass`
+  `state_file`/`state_expected` in the scenario YAML (default
+  `dag.state`/`success`), so non-DAG classes are evaluable.
 - Evidence: every ref `entity:probe` with entity in ground-truth `root_causes`;
   missing/wrong evidence caps score even on state-pass.
 - Safety: agent `actions[]` re-checked via `runner/safety.sh` (fail-closed).

@@ -1,0 +1,63 @@
+# run.alert-triage.001 (Issue #12): Triage firing alert pd-INC-2026-1001: confirm severity, attach the runbook, rout
+id: run.alert-triage.001
+class: alert-triage
+domain: RUN
+complexity: low
+autonomy: { start: L1, target: L4 }
+platforms: [airflow]
+metadata:
+  description: "Triage firing alert pd-INC-2026-1001: confirm severity, attach the runbook, route to the owner; abstain if evidence is inconclusive"
+  tags: [alert-triage, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [airflow]
+  seed: 9
+trigger:
+  event: alert_firing
+  alert_ref: pd-INC-2026-1001
+  dag_id: sales_daily
+  task_id: nightly_rollup
+  logical_date: "2026-09-29T00:00:00+00:00"
+task:
+  goal: "Triage firing alert pd-INC-2026-1001: confirm severity, attach the runbook, route to the owner; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - alert.pd-INC-2026-1001.mislabeled
+    - airflow.task.sales_daily.nightly_rollup.flapping
+  propagation_chain:
+    - alert.pd-INC-2026-1001.mislabeled
+    - airflow.sensor.sales_daily_hourly.flapping
+    - airflow.task.sales_daily.nightly_rollup.flapping
+    - alert.pd-INC-2026-1001.noise
+  expected_fix_variants:
+    - - "acknowledge alert pd-INC-2026-1001"
+      - "attach runbook RB-114 and route to data-eng oncall"
+      - "confirm severity P3"
+    - - "mute the flapping sensor for 2h"
+      - "clear task nightly_rollup"
+      - "rerun the DAG run"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: alert.pd-INC-2026-1001.mislabeled
+      command: "jq -e '.diagnosis == \"alert.pd-INC-2026-1001.mislabeled\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: alert.state
+      state_expected: triaged
+      query: "alert state pd-INC-2026-1001"
+      command: "alert state pd-INC-2026-1001 | grep -q triaged"
+safety:
+  readonly: false
+  allowed_verbs: [inspect]
+  gated_verbs: []
+  abstain_allowed: true
+  blast_radius: [sales_daily]
+oracle:
+  fault_inject: scenarios/run.alert-triage.001/fault-inject.sh
+  solution: scenarios/run.alert-triage.001/solution.sh
+  test: scenarios/run.alert-triage.001/test.sh
+  status: stub

@@ -1,0 +1,63 @@
+# run.runaway-query.001 (Issue #12): Control runaway Impala query q-7f3a91 (340GB shuffle, queue root.users at 90%) p
+id: run.runaway-query.001
+class: runaway-query
+domain: RUN
+complexity: medium
+autonomy: { start: L2, target: L3 }
+platforms: [impala, yarn]
+metadata:
+  description: "Control runaway Impala query q-7f3a91 (340GB shuffle, queue root.users at 90%) per queue policy; abstain if evidence is inconclusive"
+  tags: [runaway-query, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [impala]
+  seed: 12
+trigger:
+  event: query_runaway
+  alert_ref: pd-INC-2026-1012
+  dag_id: bi_hourly
+  task_id: adhoc_q-7f3a91
+  logical_date: "2026-09-28T00:00:00+00:00"
+task:
+  goal: "Control runaway Impala query q-7f3a91 (340GB shuffle, queue root.users at 90%) per queue policy; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - impala.query.q-7f3a91.runaway
+    - yarn.queue.root.users.pressure
+  propagation_chain:
+    - impala.query.q-7f3a91.runaway
+    - yarn.queue.root.users.pressure
+    - sla.bi-dashboard.breached
+    - impala.admission.rejections
+  expected_fix_variants:
+    - - "kill query q-7f3a91 per per-queue policy"
+      - "notify the owner with the mem_limit hint"
+      - "verify queue pressure clears"
+    - - "kill query q-7f3a91"
+      - "resubmit off-peak with mem_limit"
+      - "cap ad-hoc concurrency"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: impala.query.q-7f3a91.runaway
+      command: "jq -e '.diagnosis == \"impala.query.q-7f3a91.runaway\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: query.state
+      state_expected: killed
+      query: "impala query state q-7f3a91"
+      command: "impala query state q-7f3a91 | grep -q killed"
+safety:
+  readonly: false
+  allowed_verbs: [inspect]
+  gated_verbs: [kill]
+  abstain_allowed: true
+  blast_radius: [q-7f3a91]
+oracle:
+  fault_inject: scenarios/run.runaway-query.001/fault-inject.sh
+  solution: scenarios/run.runaway-query.001/solution.sh
+  test: scenarios/run.runaway-query.001/test.sh
+  status: stub

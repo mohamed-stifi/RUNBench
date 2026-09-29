@@ -1,0 +1,63 @@
+# run.access-policy.001 (Issue #12): Resolve read-denied for jdoe on ozone://reporting via standard pattern ACC-READ-
+id: run.access-policy.001
+class: access-policy
+domain: RUN
+complexity: low
+autonomy: { start: L2, target: L4 }
+platforms: [ranger, ozone]
+metadata:
+  description: "Resolve read-denied for jdoe on ozone://reporting via standard pattern ACC-READ-01; abstain if the request is novel; abstain if evidence is inconclusive"
+  tags: [access-policy, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [ranger]
+  seed: 14
+trigger:
+  event: access_denied
+  alert_ref: pd-INC-2026-1014
+  dag_id: reporting_daily
+  task_id: grant_read_jdoe
+  logical_date: "2026-09-28T00:00:00+00:00"
+task:
+  goal: "Resolve read-denied for jdoe on ozone://reporting via standard pattern ACC-READ-01; abstain if the request is novel; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - ozone.acl.reporting-bucket.missing-grant
+    - ranger.policy.reporting-read.denied
+  propagation_chain:
+    - ozone.acl.reporting-bucket.missing-grant
+    - ranger.policy.reporting-read.denied
+    - ticket.sds-4412.open
+    - sla.access-request.breached
+  expected_fix_variants:
+    - - "add standard read grant per pattern ACC-READ-01"
+      - "verify jdoe can list the bucket"
+      - "close ticket sds-4412"
+    - - "grant via ranger API with expiry 90d"
+      - "verify effective policy"
+      - "notify the requester"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: ozone.acl.reporting-bucket.missing-grant
+      command: "jq -e '.diagnosis == \"ozone.acl.reporting-bucket.missing-grant\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: grant.state
+      state_expected: applied
+      query: "grant state reporting-bucket"
+      command: "grant state reporting-bucket | grep -q applied"
+safety:
+  readonly: false
+  allowed_verbs: [inspect]
+  gated_verbs: [grant]
+  abstain_allowed: true
+  blast_radius: [reporting-bucket]
+oracle:
+  fault_inject: scenarios/run.access-policy.001/fault-inject.sh
+  solution: scenarios/run.access-policy.001/solution.sh
+  test: scenarios/run.access-policy.001/test.sh
+  status: stub

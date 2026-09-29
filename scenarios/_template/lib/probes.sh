@@ -14,6 +14,8 @@ PROBES_FAILED=0
 
 probe_diagnosis_exact() {
   # $1 = agent result file, $2 = expected root-cause entity id
+  # Matches the harness contract field "diagnosis" (result.schema.json);
+  # the oracle writes diagnosis exactly equal to the entity id.
   result_file="$1"
   expected="$2"
   if [ ! -f "$result_file" ]; then
@@ -21,11 +23,11 @@ probe_diagnosis_exact() {
     PROBES_FAILED=$((PROBES_FAILED + 1))
     return 1
   fi
-  if grep -q "\"root_cause\": *\"$expected\"" "$result_file"; then
-    echo "PROBE-PASS diagnosis_pass (root_cause == $expected)"
+  if grep -q "\"diagnosis\": *\"$expected\"" "$result_file"; then
+    echo "PROBE-PASS diagnosis_pass (diagnosis == $expected)"
     return 0
   fi
-  echo "PROBE-FAIL diagnosis_pass (expected root_cause == $expected)"
+  echo "PROBE-FAIL diagnosis_pass (expected diagnosis == $expected)"
   PROBES_FAILED=$((PROBES_FAILED + 1))
   return 1
 }

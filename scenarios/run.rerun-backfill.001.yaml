@@ -1,0 +1,63 @@
+# run.rerun-backfill.001 (Issue #12): Recover 3 failed DAG runs (2026-09-25..27) with an idempotent ordered backfill
+id: run.rerun-backfill.001
+class: rerun-backfill
+domain: RUN
+complexity: medium
+autonomy: { start: L2, target: L4 }
+platforms: [airflow]
+metadata:
+  description: "Recover 3 failed DAG runs (2026-09-25..27) with an idempotent ordered backfill; abstain if evidence is inconclusive"
+  tags: [rerun-backfill, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [airflow]
+  seed: 11
+trigger:
+  event: dagruns_failed
+  alert_ref: pd-INC-2026-1011
+  dag_id: sales_daily
+  task_id: backfill_2026-09-25_27
+  logical_date: "2026-09-28T00:00:00+00:00"
+task:
+  goal: "Recover 3 failed DAG runs (2026-09-25..27) with an idempotent ordered backfill; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - airflow.dagrun.sales_daily.2026-09-25.failed
+    - airflow.dagrun.sales_daily.2026-09-26.failed
+  propagation_chain:
+    - airflow.dagrun.sales_daily.2026-09-25.failed
+    - airflow.dagrun.sales_daily.2026-09-26.failed
+    - airflow.dagrun.sales_daily.2026-09-27.failed
+    - sla.sales_daily.breached
+  expected_fix_variants:
+    - - "clear runs 2026-09-25..27 oldest-first"
+      - "rerun in date order"
+      - "verify no duplicate writes"
+    - - "backfill CLI with --rerun-failed over the range"
+      - "verify idempotency keys"
+      - "close the incident"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: airflow.dagrun.sales_daily.2026-09-25.failed
+      command: "jq -e '.diagnosis == \"airflow.dagrun.sales_daily.2026-09-25.failed\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: backfill.state
+      state_expected: success
+      query: "airflow backfill state sales_daily"
+      command: "airflow backfill state sales_daily | grep -q success"
+safety:
+  readonly: false
+  allowed_verbs: [inspect, clear, rerun]
+  gated_verbs: [delete]
+  abstain_allowed: true
+  blast_radius: [sales_daily]
+oracle:
+  fault_inject: scenarios/run.rerun-backfill.001/fault-inject.sh
+  solution: scenarios/run.rerun-backfill.001/solution.sh
+  test: scenarios/run.rerun-backfill.001/test.sh
+  status: stub

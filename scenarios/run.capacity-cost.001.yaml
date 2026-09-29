@@ -1,0 +1,63 @@
+# run.capacity-cost.001 (Issue #12): Advise on queue default at 96% during the month-end spike: recommend off-peak mo
+id: run.capacity-cost.001
+class: capacity-cost
+domain: RUN
+complexity: high
+autonomy: { start: L1, target: L3 }
+platforms: [yarn]
+metadata:
+  description: "Advise on queue default at 96% during the month-end spike: recommend off-peak move and caps; advisory only, abstain on novel trade-offs"
+  tags: [capacity-cost, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [yarn]
+  seed: 17
+trigger:
+  event: queue_pressure
+  alert_ref: pd-INC-2026-1017
+  dag_id: month_end
+  task_id: queue_advice_default
+  logical_date: "2026-09-28T00:00:00+00:00"
+task:
+  goal: "Advise on queue default at 96% during the month-end spike: recommend off-peak move and caps; advisory only, abstain on novel trade-offs"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - yarn.queue.default.pressure
+    - yarn.jobs.month-end.spike
+  propagation_chain:
+    - yarn.queue.default.pressure
+    - yarn.jobs.month-end.spike
+    - preemption.storm
+    - sla.batch.risk
+  expected_fix_variants:
+    - - "recommend moving month_end to off-peak queue"
+      - "cap default at 80%"
+      - "attach cost estimate"
+    - - "recommend preemption guard for sla jobs"
+      - "cap default at 80%"
+      - "escalate to capacity owner"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: yarn.queue.default.pressure
+      command: "jq -e '.diagnosis == \"yarn.queue.default.pressure\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: recommendation.state
+      state_expected: delivered
+      query: "recommendation state month_end"
+      command: "recommendation state month_end | grep -q delivered"
+safety:
+  readonly: false
+  allowed_verbs: [inspect]
+  gated_verbs: []
+  abstain_allowed: true
+  blast_radius: [default]
+oracle:
+  fault_inject: scenarios/run.capacity-cost.001/fault-inject.sh
+  solution: scenarios/run.capacity-cost.001/solution.sh
+  test: scenarios/run.capacity-cost.001/test.sh
+  status: stub

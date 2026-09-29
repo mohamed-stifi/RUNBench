@@ -23,3 +23,4 @@ Contributor guides (add-scenario walkthrough, dashboard usage) land in Issue #16
 - [`scenario-format.md`](scenario-format.md) — `<M,E,T,D>` field reference (Issue #16)
 - [`coverage.md`](coverage.md) — class × scenario matrix (Issue #16)
 - [`add-scenario.md`](add-scenario.md) — contributor walkthrough + reviewer checklist (Issue #16)
+- [`contamination.md`](contamination.md) — hidden vs open split policy (Issue #12)

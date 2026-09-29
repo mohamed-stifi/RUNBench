@@ -1,0 +1,63 @@
+# run.user-support.001 (Issue #12): Answer slow-notebook ticket sup-208 with the scripted skew flow: diagnose stage 
+id: run.user-support.001
+class: user-support
+domain: RUN
+complexity: low
+autonomy: { start: L1, target: L5 }
+platforms: [spark]
+metadata:
+  description: "Answer slow-notebook ticket sup-208 with the scripted skew flow: diagnose stage skew, give the repartition hint; abstain if evidence is inconclusive"
+  tags: [user-support, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [spark]
+  seed: 15
+trigger:
+  event: support_ticket
+  alert_ref: pd-INC-2026-1015
+  dag_id: notebooks
+  task_id: user-notebook-42
+  logical_date: "2026-09-28T00:00:00+00:00"
+task:
+  goal: "Answer slow-notebook ticket sup-208 with the scripted skew flow: diagnose stage skew, give the repartition hint; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - spark.job.user-notebook-42.skew
+    - spark.stage.7.skewed-partitions
+  propagation_chain:
+    - spark.job.user-notebook-42.skew
+    - spark.stage.7.skewed-partitions
+    - notebook.slow
+    - ticket.sup-208.open
+  expected_fix_variants:
+    - - "reply with repartition hint + AQE flag"
+      - "link runbook RB-042"
+      - "close ticket sup-208"
+    - - "reply with salted-key workaround"
+      - "link runbook RB-042"
+      - "schedule follow-up"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: spark.job.user-notebook-42.skew
+      command: "jq -e '.diagnosis == \"spark.job.user-notebook-42.skew\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: answer.state
+      state_expected: delivered
+      query: "answer state sup-208"
+      command: "answer state sup-208 | grep -q delivered"
+safety:
+  readonly: false
+  allowed_verbs: [inspect]
+  gated_verbs: []
+  abstain_allowed: true
+  blast_radius: [user-notebook-42]
+oracle:
+  fault_inject: scenarios/run.user-support.001/fault-inject.sh
+  solution: scenarios/run.user-support.001/solution.sh
+  test: scenarios/run.user-support.001/test.sh
+  status: stub

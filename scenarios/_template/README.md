@@ -19,7 +19,7 @@ and `lib/probes.sh` (shared probe functions, POSIX sh + grep only).
 
 | Probe | Function | What it checks |
 |---|---|---|
-| diagnosis exact-match | `probe_diagnosis_exact <result.json> <entity>` | agent's `root_cause` equals the ground-truth entity id |
+| diagnosis exact-match | `probe_diagnosis_exact <result.json> <entity>` | agent's `diagnosis` equals the ground-truth entity id (harness contract field) |
 | mitigation state-check | `probe_mitigation_statecheck <state-file> <expected>` | post-fix system state (e.g. DAG `success`) |
 
 Custom probes may be added, but these two are mandatory.

@@ -1,0 +1,63 @@
+# run.housekeeping.001 (Issue #12): Compact 48k small files in landing-zone to 256MB objects, update stats, enforce 
+id: run.housekeeping.001
+class: housekeeping
+domain: RUN
+complexity: medium
+autonomy: { start: L2, target: L4 }
+platforms: [ozone, hive]
+metadata:
+  description: "Compact 48k small files in landing-zone to 256MB objects, update stats, enforce retention; abstain if evidence is inconclusive"
+  tags: [housekeeping, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [ozone]
+  seed: 16
+trigger:
+  event: small_files_alert
+  alert_ref: pd-INC-2026-1016
+  dag_id: landing_ingest
+  task_id: compact_landing_zone
+  logical_date: "2026-09-28T00:00:00+00:00"
+task:
+  goal: "Compact 48k small files in landing-zone to 256MB objects, update stats, enforce retention; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - hdfs.dir.landing-zone.small-files
+    - namenode.heap.pressure
+  propagation_chain:
+    - hdfs.dir.landing-zone.small-files
+    - namenode.heap.pressure
+    - ingest.slow
+    - retention.sla.risk
+  expected_fix_variants:
+    - - "compact landing-zone to 256MB objects"
+      - "update table stats"
+      - "enforce 30d retention"
+    - - "archive files older than 7d"
+      - "compact remainder"
+      - "verify file count < 500"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: hdfs.dir.landing-zone.small-files
+      command: "jq -e '.diagnosis == \"hdfs.dir.landing-zone.small-files\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: compaction.state
+      state_expected: success
+      query: "compaction state landing-zone"
+      command: "compaction state landing-zone | grep -q success"
+safety:
+  readonly: false
+  allowed_verbs: [inspect, compact]
+  gated_verbs: [delete]
+  abstain_allowed: true
+  blast_radius: [landing-zone]
+oracle:
+  fault_inject: scenarios/run.housekeeping.001/fault-inject.sh
+  solution: scenarios/run.housekeeping.001/solution.sh
+  test: scenarios/run.housekeeping.001/test.sh
+  status: stub

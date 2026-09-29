@@ -1,0 +1,63 @@
+# run.data-incident.001 (Issue #12): Triage data incident: sales_fact partition 2026-09-28 row-count dropped 62%
+id: run.data-incident.001
+class: data-incident
+domain: RUN
+complexity: medium
+autonomy: { start: L1, target: L4 }
+platforms: [hive]
+metadata:
+  description: "Triage data incident: sales_fact partition 2026-09-28 row-count dropped 62%; find the root cause with linked evidence and propose a safe recovery; abstain if evidence is inconclusive"
+  tags: [data-incident, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [hive-metastore]
+  seed: 10
+trigger:
+  event: dq_check_failed
+  alert_ref: pd-INC-2026-1010
+  dag_id: sales_daily
+  task_id: dq_rowcount_check
+  logical_date: "2026-09-28T00:00:00+00:00"
+task:
+  goal: "Triage data incident: sales_fact partition 2026-09-28 row-count dropped 62%; find the root cause with linked evidence and propose a safe recovery; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - hive.table.sales_fact.schema.drift
+    - hive.partition.sales_fact.2026-09-28.rowcount-drop
+  propagation_chain:
+    - hive.table.sales_fact.schema.drift
+    - hive.partition.sales_fact.2026-09-28.rowcount-drop
+    - data-incident.dq-check.failed
+    - downstream.sales_mart.stale
+  expected_fix_variants:
+    - - "quarantine partition 2026-09-28"
+      - "rollback sales_fact to 2026-09-27"
+      - "rerun the dq check"
+    - - "backfill partition from raw landing"
+      - "clear task dq_rowcount_check"
+      - "rerun the DAG run"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: hive.table.sales_fact.schema.drift
+      command: "jq -e '.diagnosis == \"hive.table.sales_fact.schema.drift\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: table.state
+      state_expected: healthy
+      query: "hive table state sales_fact"
+      command: "hive table state sales_fact | grep -q healthy"
+safety:
+  readonly: false
+  allowed_verbs: [inspect, quarantine]
+  gated_verbs: [rerun]
+  abstain_allowed: true
+  blast_radius: [sales_fact]
+oracle:
+  fault_inject: scenarios/run.data-incident.001/fault-inject.sh
+  solution: scenarios/run.data-incident.001/solution.sh
+  test: scenarios/run.data-incident.001/test.sh
+  status: stub

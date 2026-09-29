@@ -1,0 +1,63 @@
+# run.service-restart.001 (Issue #12): Recover unhealthy YARN nodemanager nm-02 (40 lost containers) inside a maintenan
+id: run.service-restart.001
+class: service-restart
+domain: RUN
+complexity: high
+autonomy: { start: L2, target: L3 }
+platforms: [yarn]
+metadata:
+  description: "Recover unhealthy YARN nodemanager nm-02 (40 lost containers) inside a maintenance window with undo; abstain if evidence is inconclusive"
+  tags: [service-restart, open-set]
+  version: 0.1.0
+environment:
+  image: cdp-slim:0.1.0
+  services: [yarn]
+  seed: 13
+trigger:
+  event: role_unhealthy
+  alert_ref: pd-INC-2026-1013
+  dag_id: sales_daily
+  task_id: yarn_nodemanager_nm-02
+  logical_date: "2026-09-28T00:00:00+00:00"
+task:
+  goal: "Recover unhealthy YARN nodemanager nm-02 (40 lost containers) inside a maintenance window with undo; abstain if evidence is inconclusive"
+  budget: { time_min: 60, steps: 50 }
+ground_truth:
+  root_causes:
+    - yarn.nodemanager.nm-02.unhealthy
+    - yarn.containers.nm-02.lost
+  propagation_chain:
+    - yarn.nodemanager.nm-02.unhealthy
+    - yarn.containers.nm-02.lost
+    - apps.sales_daily.failed
+    - yarn.capacity.degraded
+  expected_fix_variants:
+    - - "drain nm-02"
+      - "restart the nodemanager role"
+      - "verify heartbeats before uncordon"
+    - - "decommission nm-02"
+      - "restart role and recommission"
+      - "verify capacity recovers"
+  probes:
+    diagnosis_pass:
+      type: exact
+      target: agent_result.diagnosis
+      value: yarn.nodemanager.nm-02.unhealthy
+      command: "jq -e '.diagnosis == \"yarn.nodemanager.nm-02.unhealthy\"' result.json"
+    mitigation_pass:
+      type: state-check
+      state_file: role.state
+      state_expected: healthy
+      query: "yarn role state nm-02"
+      command: "yarn role state nm-02 | grep -q healthy"
+safety:
+  readonly: false
+  allowed_verbs: [inspect]
+  gated_verbs: [restart]
+  abstain_allowed: true
+  blast_radius: [nm-02]
+oracle:
+  fault_inject: scenarios/run.service-restart.001/fault-inject.sh
+  solution: scenarios/run.service-restart.001/solution.sh
+  test: scenarios/run.service-restart.001/test.sh
+  status: stub

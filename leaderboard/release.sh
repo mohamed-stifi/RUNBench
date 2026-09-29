@@ -4,12 +4,27 @@
 # board_sha256, date, entries} and prints the git-tag convention
 # (dataset@<tag>). The manifest pins exactly which board the tag means;
 # history stays append-only (releases are new files, never edits).
+# Quarantined scenarios (leaderboard/quarantine.json) block release, not merge.
 # Usage: release.sh BOARD_JSON TAG [OUT_ROOT]
-set -u
+set -eu
 BOARD="${1:?usage: release.sh BOARD_JSON TAG [OUT_ROOT]}"
 TAG="${2:?usage: release.sh BOARD_JSON TAG [OUT_ROOT]}"
 OUT_ROOT="${3:-leaderboard/releases}"
 PY=".venv/bin/python"; [ -x "$PY" ] || PY="python3"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+"$PY" - "$BOARD" "${QUARANTINE_JSON:-$ROOT/leaderboard/quarantine.json}" <<'EOF'
+import json, sys
+board = json.load(open(sys.argv[1]))
+try:
+    quar = {q["scenario_id"]: q for q in json.load(open(sys.argv[2])).get("quarantined", [])}
+except FileNotFoundError:
+    quar = {}
+hit = sorted({e["scenario_id"] for e in board["entries"]} & set(quar))
+if hit:
+    for s in hit:
+        print(f"GATE-FAIL: release blocked — {s} quarantined: {quar[s].get('reason')} (log: {quar[s].get('log')})", file=sys.stderr)
+    sys.exit(1)
+EOF
 mkdir -p "$OUT_ROOT"
 "$PY" - "$BOARD" "$OUT_ROOT/$TAG.json" "$TAG" <<'EOF'
 import hashlib, json, sys, datetime
